@@ -1,0 +1,53 @@
+body {
+  background: #181c24;
+  color: #e0e6ed;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: #232946;
+  color: #fffffe;
+  padding: 1.5rem 0;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(35,41,70,0.2);
+}
+
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  background: #232946;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(35,41,70,0.4);
+  padding: 2rem 2rem 1rem 2rem;
+}
+
+canvas {
+  background: #121629;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(35,41,70,0.3);
+}
+
+/* Mejorar leyendas y títulos */
+h1 {
+  font-size: 2.2rem;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+/* Botones o controles futuros */
+button, input[type="button"] {
+  background: #eebbc3;
+  color: #232946;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  margin: 0.5rem 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover, input[type="button"]:hover {
+  background: #ffd6e0;
+}

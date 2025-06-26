@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Dashboard de Sensores</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>TEMPERATURA Y HÚMEDAD - ARDUINO MEGA Y SENSOR DHT11</h1>
+    </header>
+
+    <div class="container">
+      <canvas id="grafico" width="800" height="400"></canvas>
+    </div>
+
+    <script>
+      let miGrafico;
+
+      function cargarDatos() {
+        fetch("/datos")
+          .then((response) => response.json())
+          .then((datos) => {
+            const tiempos = datos
+              .map((d) => {
+                const fechaLocal = new Date(d.fecha_hora.replace(' ', 'T'));
+                return fechaLocal.toLocaleString("es-CO", {
+                  dateStyle: "short",
+                  timeStyle: "medium",
+                  hour12: true,
+                });
+              })
+              .reverse();
+
+            const temperaturas = datos.map((d) => d.temperatura).reverse();
+            const humedades = datos.map((d) => d.humedad).reverse();
+
+            if (!miGrafico) {
+              const ctx = document.getElementById("grafico").getContext("2d");
+              miGrafico = new Chart(ctx, {
+                type: "line",
+                data: {
+                  labels: tiempos,
+                  datasets: [
+                    {
+                      label: "Temperatura (°C)",
+                      data: temperaturas,
+                      borderColor: "#ff595e",
+                      backgroundColor: "rgba(255,89,94,0.15)",
+                      fill: false,
+                      yAxisID: 'y',
+                      tension: 0.3,
+                      pointRadius: 4,
+                      pointBackgroundColor: '#ff595e',
+                    },
+                    {
+                      label: "Húmedad (%)",
+                      data: humedades,
+                      borderColor: "#1982c4",
+                      backgroundColor: "rgba(25,130,196,0.15)",
+                      fill: false,
+                      yAxisID: 'y2',
+                      tension: 0.3,
+                      pointRadius: 4,
+                      pointBackgroundColor: '#1982c4',
+                      hidden: false
+                    },
+                  ],
+                },
+                options: {
+                  responsive: true,
+                  animation: false,
+                  plugins: {
+                    legend: {
+                      display: true,
+                      labels: {
+                        color: '#eebbc3',
+                        font: { size: 16, weight: 'bold' }
+                      }
+                    },
+                    title: {
+                      display: true,
+                      text: 'Histórico de Temperatura y Húmedad',
+                      color: '#fffffe',
+                      font: { size: 20, weight: 'bold' }
+                    },
+                    tooltip: {
+                      enabled: true,
+                      backgroundColor: '#232946',
+                      titleColor: '#eebbc3',
+                      bodyColor: '#fffffe',
+                      borderColor: '#eebbc3',
+                      borderWidth: 1,
+                      titleFont: { size: 16, weight: 'bold' },
+                      bodyFont: { size: 14 }
+                    }
+                  },
+                  scales: {
+                    x: {
+                      title: { display: true, text: "Fecha - Hora", color: '#eebbc3', font: { size: 16, weight: 'bold' } },
+                      ticks: { color: '#b8c1ec', font: { size: 12 } },
+                      grid: { color: '#232946' },
+                      maxTicksLimit: 6
+                    },
+                    y: {
+                      beginAtZero: true,
+                      title: { display: true, text: "Temperatura (°C)", color: '#eebbc3', font: { size: 16, weight: 'bold' } },
+                      ticks: { color: '#b8c1ec', font: { size: 12 } },
+                      grid: { color: '#232946' },
+                      max: 30
+                    },
+                    y2: {
+                      beginAtZero: true,
+                      position: 'right',
+                      title: { display: true, text: "Húmedad (%)", color: '#eebbc3', font: { size: 16, weight: 'bold' } },
+                      ticks: { color: '#1982c4', font: { size: 12 } },
+                      grid: { drawOnChartArea: false },
+                      min: 0,
+                      max: 100
+                    }
+                  },
+                },
+              });
+            } else {
+              miGrafico.data.labels = tiempos;
+              miGrafico.data.datasets[0].data = temperaturas;
+              miGrafico.data.datasets[1].data = humedades;
+              miGrafico.data.datasets[1].hidden = false;
+              miGrafico.update();
+            }
+          });
+      }
+
+      // Cargar la primera vez
+      cargarDatos();
+
+      // Actualizar cada 3 segundos
+      setInterval(cargarDatos, 3000);
+    </script>
+  </body>
+</html>
